@@ -1,31 +1,90 @@
 // app/gallery.tsx
-import { useGallery } from '@/lib/store/GalleryContext';
+import { useState } from 'react';
+import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useGallery } from '@/lib/store/GalleryContext';
+import { ArrowLeft, ImageOff, Heart, X, RotateCcw } from 'lucide-react-native';
+import { SwipeablePhoto } from '@/components/organisms/SwipeablePhoto';
+import { Photo } from '@/lib/store/GalleryContext';
 import "@/global.css";
-import { ArrowLeft, ImageOff, Trash2 } from 'lucide-react-native';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function GalleryScreen() {
   const router = useRouter();
-  const { photos, removePhoto } = useGallery();
+  const { photos, removePhoto, clearGallery } = useGallery();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);
+  const [deletedCount, setDeletedCount] = useState(0);
+
+  const handleSwipeLeft = (photo: Photo) => {
+    setDeletedCount(deletedCount + 1);
+    removePhoto(photo.id);
+    setTimeout(() => {
+      setCurrentIndex(currentIndex + 1);
+    }, 300);
+  };
+
+  const handleSwipeRight = (photo: Photo) => {
+    setSavedCount(savedCount + 1);
+    setTimeout(() => {
+      setCurrentIndex(currentIndex + 1);
+    }, 300);
+  };
+
+  const handleReset = () => {
+    setCurrentIndex(0);
+    setSavedCount(0);
+    setDeletedCount(0);
+  };
+
+  const currentPhoto = photos[currentIndex];
+  const remainingPhotos = photos.length - currentIndex;
 
   return (
     <View className="flex-1 bg-gray-100">
+      <StatusBar barStyle="dark-content" />
+      
       {/* Header */}
-      <View className="pt-12 pb-4 px-6 bg-white shadow-sm flex-row items-center justify-between">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity onPress={() => router.back()} className="mr-4">
-            <ArrowLeft size={24} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-2xl font-bold text-gray-800">
-            Galería
-          </Text>
+      <View className="pt-12 pb-4 px-6 bg-white shadow-sm">
+        <View className="flex-row items-center justify-between mb-3">
+          <View className="flex-row items-center flex-1">
+            <TouchableOpacity onPress={() => router.back()} className="mr-4">
+              <ArrowLeft size={24} color="#000" />
+            </TouchableOpacity>
+            <Text className="text-2xl font-bold text-gray-800">
+              Galería
+            </Text>
+          </View>
+          
+          {photos.length > 0 && (
+            <TouchableOpacity
+              onPress={clearGallery}
+              className="bg-red-50 px-3 py-2 rounded-lg flex-row items-center"
+            >
+              <X size={16} color="#ef4444" strokeWidth={2} />
+              <Text className="text-red-600 font-semibold text-xs ml-1">
+                Limpiar
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
-        <View className="bg-purple-100 px-3 py-1 rounded-full">
-          <Text className="text-purple-700 font-bold">
-            {photos.length}
-          </Text>
-        </View>
+
+        {/* Stats */}
+        {photos.length > 0 && (
+          <View className="flex-row justify-around">
+            <View className="items-center">
+              <Text className="text-gray-500 text-xs mb-1">Guardadas</Text>
+              <Text className="text-green-600 font-bold text-lg">{savedCount}</Text>
+            </View>
+            <View className="items-center">
+              <Text className="text-gray-500 text-xs mb-1">Restantes</Text>
+              <Text className="text-purple-600 font-bold text-lg">{remainingPhotos}</Text>
+            </View>
+            <View className="items-center">
+              <Text className="text-gray-500 text-xs mb-1">Eliminadas</Text>
+              <Text className="text-red-600 font-bold text-lg">{deletedCount}</Text>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Contenido */}
@@ -47,36 +106,72 @@ export default function GalleryScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-      ) : (
-        <ScrollView className="flex-1 p-4">
-          <Text className="text-gray-600 text-sm mb-4 px-2">
-            Próximamente: Desliza las fotos para decidir si las guardas o las eliminas
+      ) : currentIndex >= photos.length ? (
+        <View className="flex-1 justify-center items-center px-6">
+          <View className="bg-purple-100 rounded-full p-6 mb-6">
+            <Heart size={60} color="#7c3aed" fill="#7c3aed" />
+          </View>
+          <Text className="text-2xl font-bold text-gray-800 mb-3">
+            Has revisado todas las fotos
           </Text>
-          
-          {photos.map((photo) => (
-            <View key={photo.id} className="mb-4 bg-white rounded-xl overflow-hidden shadow-md">
-              <Image
-                source={{ uri: photo.uri }}
-                className="w-full h-80"
-                resizeMode="cover"
+          <Text className="text-gray-600 text-center mb-8">
+            Guardaste {savedCount} y eliminaste {deletedCount} fotos
+          </Text>
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              onPress={handleReset}
+              className="bg-purple-600 px-6 py-3 rounded-xl flex-row items-center"
+            >
+              <RotateCcw size={20} color="white" strokeWidth={2} />
+              <Text className="text-white font-bold ml-2">
+                Reiniciar
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="bg-gray-600 px-6 py-3 rounded-xl"
+            >
+              <Text className="text-white font-bold">
+                Volver
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <>
+          {/* Cards Container */}
+          <View className="flex-1 items-center justify-center">
+            {currentPhoto && (
+              <SwipeablePhoto
+                key={currentPhoto.id}
+                photo={currentPhoto}
+                onSwipeLeft={handleSwipeLeft}
+                onSwipeRight={handleSwipeRight}
               />
-              <View className="p-3 flex-row justify-between items-center">
-                <Text className="text-gray-600 text-xs">
-                  {new Date(photo.timestamp).toLocaleString()}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => removePhoto(photo.id)}
-                  className="bg-red-50 p-2 rounded-lg flex-row items-center"
-                >
-                  <Trash2 size={16} color="#ef4444" strokeWidth={2} />
-                  <Text className="text-red-500 font-semibold text-xs ml-1">
-                    Eliminar
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            )}
+          </View>
+
+          {/* Action Buttons */}
+          <View className="pb-8 px-6">
+            <View className="flex-row justify-center items-center gap-8">
+              <TouchableOpacity
+                onPress={() => handleSwipeLeft(currentPhoto)}
+                className="bg-white rounded-full p-5 shadow-lg active:scale-95"
+              >
+                <X size={32} color="#ef4444" strokeWidth={3} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleSwipeRight(currentPhoto)}
+                className="bg-white rounded-full p-5 shadow-lg active:scale-95"
+              >
+                <Heart size={32} color="#10b981" strokeWidth={3} />
+              </TouchableOpacity>
             </View>
-          ))}
-        </ScrollView>
+            <Text className="text-center text-gray-500 text-xs mt-4">
+              Desliza o usa los botones para decidir
+            </Text>
+          </View>
+        </>
       )}
     </View>
   );
