@@ -10,14 +10,14 @@ import "@/global.css";
 
 export default function GalleryScreen() {
   const router = useRouter();
-  const { photos, removePhoto, clearGallery } = useGallery();
+  const { pendingPhotos, savePhoto, deletePhoto } = useGallery();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [savedCount, setSavedCount] = useState(0);
   const [deletedCount, setDeletedCount] = useState(0);
 
   const handleSwipeLeft = (photo: Photo) => {
     setDeletedCount(deletedCount + 1);
-    removePhoto(photo.id);
+    deletePhoto(photo.id);
     setTimeout(() => {
       setCurrentIndex(currentIndex + 1);
     }, 300);
@@ -25,6 +25,7 @@ export default function GalleryScreen() {
 
   const handleSwipeRight = (photo: Photo) => {
     setSavedCount(savedCount + 1);
+    savePhoto(photo.id);
     setTimeout(() => {
       setCurrentIndex(currentIndex + 1);
     }, 300);
@@ -36,8 +37,8 @@ export default function GalleryScreen() {
     setDeletedCount(0);
   };
 
-  const currentPhoto = photos[currentIndex];
-  const remainingPhotos = photos.length - currentIndex;
+  const currentPhoto = pendingPhotos[currentIndex];
+  const remainingPhotos = pendingPhotos.length - currentIndex;
 
   return (
     <View className="flex-1 bg-gray-100">
@@ -51,25 +52,13 @@ export default function GalleryScreen() {
               <ArrowLeft size={24} color="#000" />
             </TouchableOpacity>
             <Text className="text-2xl font-bold text-gray-800">
-              Galería
+              Revisar Fotos
             </Text>
           </View>
-          
-          {photos.length > 0 && (
-            <TouchableOpacity
-              onPress={clearGallery}
-              className="bg-red-50 px-3 py-2 rounded-lg flex-row items-center"
-            >
-              <X size={16} color="#ef4444" strokeWidth={2} />
-              <Text className="text-red-600 font-semibold text-xs ml-1">
-                Limpiar
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* Stats */}
-        {photos.length > 0 && (
+        {pendingPhotos.length > 0 && (
           <View className="flex-row justify-around">
             <View className="items-center">
               <Text className="text-gray-500 text-xs mb-1">Guardadas</Text>
@@ -88,14 +77,14 @@ export default function GalleryScreen() {
       </View>
 
       {/* Contenido */}
-      {photos.length === 0 ? (
+      {pendingPhotos.length === 0 ? (
         <View className="flex-1 justify-center items-center px-6">
           <ImageOff size={80} color="#9ca3af" strokeWidth={1.5} />
           <Text className="text-xl font-bold text-gray-700 mt-6 mb-2">
-            No hay fotos aún
+            No hay fotos pendientes
           </Text>
           <Text className="text-gray-500 text-center mb-8">
-            Ve a la cámara y captura tus primeros momentos
+            Ve a la cámara y captura nuevos momentos
           </Text>
           <TouchableOpacity
             onPress={() => router.push('/camera')}
@@ -106,7 +95,7 @@ export default function GalleryScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-      ) : currentIndex >= photos.length ? (
+      ) : currentIndex >= pendingPhotos.length ? (
         <View className="flex-1 justify-center items-center px-6">
           <View className="bg-purple-100 rounded-full p-6 mb-6">
             <Heart size={60} color="#7c3aed" fill="#7c3aed" />

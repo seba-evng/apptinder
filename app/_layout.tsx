@@ -1,15 +1,18 @@
 // app/_layout.tsx
-import { Stack } from 'expo-router';
 import { GalleryProvider } from '@/lib/store/GalleryContext';
+import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
   return (
-    <GalleryProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
-    </GalleryProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <GalleryProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </GalleryProvider>
+    </GestureHandlerRootView>
   );
 }
