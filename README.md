@@ -4,7 +4,7 @@ Una aplicación móvil moderna para capturar, gestionar y editar fotos con gesto
 
 ## 🎬 Demo
 
-
+![Image](https://github.com/user-attachments/assets/4dbccb96-659b-4cce-88c9-d53f037b6bbe)
 
 ---
 
