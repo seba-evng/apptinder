@@ -1,53 +1,225 @@
-> Edited for use in IDX on 07/09/12
+# 📸 Snap & Swipe
 
-# Welcome to your Expo app 👋
+Una aplicación móvil moderna para capturar, gestionar y editar fotos con gestos intuitivos. Desarrollada con React Native, Expo y NativeWind.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## 🎬 Demo
 
-## Get started
 
-#### Android
 
-Android previews are defined as a `workspace.onStart` hook and started as a vscode task when the workspace is opened/started.
+---
 
-Note, if you can't find the task, either:
-- Rebuild the environment (using command palette: `IDX: Rebuild Environment`), or
-- Run `npm run android -- --tunnel` command manually run android and see the output in your terminal. The device should pick up this new command and switch to start displaying the output from it.
+## ✨ Características
 
-In the output of this command/task, you'll find options to open the app in a
+### 📷 Captura de Fotos
+- Cámara integrada con permisos nativos
+- Cambio entre cámara frontal y trasera
+- Vista previa en tiempo real
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 🔄 Sistema de Swipe
+- Desliza derecha para **guardar** fotos
+- Desliza izquierda para **eliminar** fotos
+- Animaciones suaves estilo Tinder
+- Indicadores visuales durante el gesto
 
-You'll also find options to open the app's developer menu, reload the app, and more.
+### 🗂️ Gestión de Galería
+- **Fotos Pendientes**: Por revisar y clasificar
+- **Fotos Guardadas**: Tus favoritas con edición
+- **Papelera**: Fotos eliminadas recuperables
 
-#### Web
+### 🎨 Editor de Fotos
+- **Arrastrar**: Mueve la imagen con un dedo
+- **Zoom**: Botones de acercar/alejar (0.5x - 4x)
+- **Rotación**: Gira en incrementos de 45°
+- **Reset**: Vuelve a valores originales
+- Modo recorte visual
 
-Web previews will be started and managred automatically. Use the toolbar to manually refresh.
+### 🎯 Funcionalidades Extra
+- Restaurar fotos desde guardadas/eliminadas
+- Contador de fotos por categoría
+- Timestamps de captura
+- Persistencia de ediciones
+- Alertas de confirmación
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🛠️ Stack Tecnológico
 
-When you're ready, run:
+- **Framework**: [React Native](https://reactnative.dev/)
+- **Plataforma**: [Expo](https://expo.dev/) (SDK 52+)
+- **Navegación**: [Expo Router](https://docs.expo.dev/router/introduction/)
+- **Estilos**: [NativeWind](https://www.nativewind.dev/) (Tailwind CSS)
+- **Cámara**: [Expo Camera](https://docs.expo.dev/versions/latest/sdk/camera/)
+- **Gestos**: React Native Animated + PanResponder
+- **Iconos**: [Lucide React Native](https://lucide.dev/)
+- **Estado**: Context API
 
-```bash
-npm run reset-project
+---
+
+## 📁 Estructura del Proyecto
+
+```
+snap-swipe-app/
+├── app/                      # Pantallas (Expo Router)
+│   ├── _layout.tsx          # Layout principal
+│   ├── index.tsx            # Menú principal
+│   ├── camera.tsx           # Pantalla de cámara
+│   ├── gallery.tsx          # Revisión con swipe
+│   ├── saved.tsx            # Fotos guardadas
+│   ├── deleted.tsx          # Papelera
+│   └── edit/
+│       └── [id].tsx         # Editor de fotos
+├── components/
+│   └── organisms/
+│       └── SwipeablePhoto.tsx  # Tarjeta con gesto
+├── lib/
+│   ├── store/
+│   │   └── GalleryContext.tsx  # Estado global
+│   └── ui/
+│       ├── useSwipeLogic.ts    # Hook de swipe
+│       └── usePhotoGestures.ts # Hook de edición
+└── assets/                  # Recursos estáticos
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🚀 Instalación
 
-To learn more about developing your project with Expo, look at the following resources:
+### Prerrequisitos
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Node.js 18+
+- npm o yarn
+- Expo CLI
+- Expo Go (para testing en dispositivo)
 
-## Join the community
+### Pasos
 
-Join our community of developers creating universal apps.
+1. **Clonar el repositorio**
+```bash
+git clone <tu-repositorio>
+cd snap-swipe-app
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. **Instalar dependencias**
+```bash
+npm install
+```
+
+3. **Configurar NativeWind**
+
+Ya está configurado en `babel.config.js` y `tailwind.config.js`.
+
+4. **Iniciar el proyecto**
+```bash
+npx expo start
+```
+
+5. **Escanear QR** con Expo Go (iOS/Android)
+
+---
+
+## 📦 Dependencias Principales
+
+```json
+{
+  "expo": "~52.0.0",
+  "expo-camera": "~16.0.0",
+  "expo-router": "~4.0.0",
+  "react-native": "0.76.0",
+  "nativewind": "^4.0.0",
+  "lucide-react-native": "latest"
+}
+```
+
+---
+
+## ⚙️ Configuración Importante
+
+### Permisos de Cámara (`app.json`)
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permite acceso para tomar fotos.",
+          "microphonePermission": "Permite acceso para grabar video."
+        }
+      ]
+    ]
+  }
+}
+```
+
+### Babel Config
+
+```javascript
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [
+      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+      "nativewind/babel",
+    ],
+  };
+};
+```
+
+---
+
+## 🎮 Uso de la App
+
+### 1. Capturar Fotos
+- Abre la app y presiona **"Abrir Cámara"**
+- Toma fotos con el botón central
+- Cambia entre cámara frontal/trasera
+
+### 2. Revisar Fotos
+- Presiona **"Revisar Fotos"**
+- Desliza **→** para guardar
+- Desliza **←** para eliminar
+- O usa los botones inferiores
+
+### 3. Editar Fotos Guardadas
+- Ve a **"Guardadas"**
+- Toca el icono de **lápiz**
+- Arrastra para mover
+- Usa botones de zoom/rotación
+- Presiona **"Guardar"**
+
+### 4. Gestionar Eliminadas
+- Ve a **"Eliminadas"**
+- Restaura fotos o elimínalas permanentemente
+- Usa **"Vaciar papelera"** para limpiar todo
+
+---
+
+## 🏗️ Arquitectura
+
+### Context API para Estado Global
+
+```typescript
+interface GalleryContextType {
+  pendingPhotos: Photo[];      // Por revisar
+  savedPhotos: Photo[];         // Guardadas
+  deletedPhotos: Photo[];       // Eliminadas
+  addPhoto: (uri: string) => void;
+  savePhoto: (id: string) => void;
+  deletePhoto: (id: string) => void;
+  updatePhotoTransform: (id: string, transform: PhotoTransform) => void;
+}
+```
+
+### Tipo de Foto
+
+```typescript
+interface Photo {
+  id: string;
+  uri: string;
+  timestamp: number;
+  transform?: PhotoTransform;   // Ediciones aplicadas
+}
+```
+
+**⭐ Si te gustó este proyecto, dale una estrella en GitHub!**
